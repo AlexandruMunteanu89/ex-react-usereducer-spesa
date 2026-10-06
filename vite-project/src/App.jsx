@@ -9,22 +9,35 @@ function App() {
  ];
 
 const [addedProducts, setAddedProducts] = useState([]);
-console.log(addedProducts);
+
+const updateProductQuantity = (name, quantity) => {
+  setAddedProducts(curr => 
+    curr.map(p => p.name === name ? {...p, quantity} : p));
+
+    }
+  
 
 
 const addToCart = product => {
-  const isProductAlreadyAdded = addedProducts.some(p => p.name === product.name);
-  if(isProductAlreadyAdded){
+  const addedProduct = addedProducts.find(p => p.name === product.name);
+  if(addedProduct){
+    updateProductQuantity(addedProduct.name, addedProduct.quantity + 1)
     return;
   }
-  const productToAdd = {
-    
-  }
+  
   setAddedProducts(curr => [...curr, {
     ...product,
     quantity: 1
   }]);
 }
+
+const removeFromCart = product => {
+  setAddedProducts(curr => curr.filter(p => p.name !== product.name));
+}
+
+const totalToPay = addedProducts.reduce(
+  (acc, p) => acc + (p.price * p.quantity), 
+0);
 
   return (
     <>
@@ -43,9 +56,11 @@ const addToCart = product => {
           {addedProducts.map((p, i) => (
             <li key={i}>
               <p>{p.quantity} x {p.name} ({p.price.toFixed(2)}€)</p>
+              <button onClick={() => removeFromCart(p)}>Rimovi dal carrello</button>
             </li>
           ))}
         </ul>
+        <h3>Totale da pagare: {totalToPay.toFixed(2)}€</h3>
         </>)}
     </>
   )
@@ -54,16 +69,11 @@ const addToCart = product => {
 export default App
 
 
-//  Milestone 2: Aggiungere prodotti al carrello
-// Aggiungi uno stato locale addedProducts (inizialmente un array vuoto) per rappresentare i prodotti nel carrello.
-// Per ogni prodotto della lista, aggiungi un bottone "Aggiungi al carrello":
-// Al click del bottone, usa una funzione addToCart per:
-// Aggiungere il prodotto al carrello se non è già presente, con una proprietà quantity = 1.
-// Se il prodotto è già nel carrello, ignora l’azione.
-// Sotto alla lista dei prodotti, mostra una lista dei prodotti nel carrello se addedProducts contiene almeno un elemento.
-// Per ogni prodotto nel carrello, mostra:
-// Nome
-// Prezzo
-// Quantità
-
-// Obiettivo: L’utente può aggiungere prodotti al carrello e vedere una lista dei prodotti aggiunti.
+//   Milestone 3: Modificare il carrello
+// Al click successivo del bottone "Aggiungi al carrello", se il prodotto è già presente:
+// Usa una funzione updateProductQuantity per incrementare la proprietà quantity del prodotto esistente.
+// Per ogni prodotto nel carrello, aggiungi un bottone "Rimuovi dal carrello":
+// Al click, usa una funzione removeFromCart per rimuovere il prodotto dal carrello.
+// Sotto alla lista del carrello, mostra il totale da pagare:
+// Calcola il totale moltiplicando il prezzo per la quantità di ogni prodotto e somma tutti i risultati.
+// Obiettivo: Gestire l’aggiunta, la rimozione e il calcolo del totale del carrello in modo dinamico.
